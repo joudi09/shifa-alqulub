@@ -93,3 +93,66 @@ a {
   height: 1px;
   background: linear-gradient(90deg, transparent, #c9a227, transparent);
 }
+
+/* ========================================= */
+/* إصلاحات الموبايل - مهمة جداً              */
+/* ========================================= */
+
+/* منع التمدد الأفقي على الموبايل */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+/* ضمان إن كل العناصر ما تتجاوز عرض الشاشة */
+* {
+  max-width: 100%;
+}
+
+/* على الموبايل: البطاقات تصير عمودية */
+@media (max-width: 768px) {
+  
+  /* البطاقات الرئيسية - كل واحدة بعرض كامل */
+  section > div[style*="repeat(3"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  
+  /* بطاقات الأدعية والمسبحة - تصير عمودية */
+  section > div[style*="justify-content: center"] {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+  }
+  
+  section > div[style*="justify-content: center"] > a {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* جدول أوقات الصلاة - 3 أعمدة بدل 6 */
+  .grid-cols-6 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  /* تصغير الهوامش على الموبايل */
+  section {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* على الشاشات الصغيرة جداً (موبايل صغير) */
+@media (max-width: 480px) {
+  
+  /* أوقات الصلاة - عمودين */
+  .grid-cols-6 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* تصغير حجم النصوص الكبيرة */
+  h1 {
+    font-size: 2.5rem !important;
+  }
+}
