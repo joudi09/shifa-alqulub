@@ -40,7 +40,7 @@ export default function QuranPage() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
+    <div className="max-w-5xl mx-auto px-4 md:px-6 py-12">
       
       {/* العنوان */}
       <div className="text-center mb-8">
@@ -58,21 +58,33 @@ export default function QuranPage() {
         </p>
       </div>
 
-      {/* البحث */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: "2.5rem" }}>
-        <div style={{ position: "relative", width: "100%", maxWidth: "500px" }}>
+      {/* البحث - مصغّر على الموبايل */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "2.5rem",
+        }}
+      >
+        <div
+          className="search-container"
+          style={{
+            position: "relative",
+            width: "100%",
+            maxWidth: "500px",
+          }}
+        >
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="ابحث عن سورة..."
+            className="search-input"
             style={{
               width: "100%",
-              padding: "14px 50px 14px 50px",
               borderRadius: "16px",
               border: "2px solid rgba(201, 162, 39, 0.3)",
               backgroundColor: "white",
-              fontSize: "16px",
               color: "#404040",
               textAlign: "center",
               outline: "none",
@@ -88,7 +100,10 @@ export default function QuranPage() {
               e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.05)";
             }}
           />
+
+          {/* أيقونة البحث */}
           <svg
+            className="search-icon"
             style={{
               position: "absolute",
               right: "16px",
@@ -109,6 +124,8 @@ export default function QuranPage() {
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.3-4.3" />
           </svg>
+
+          {/* زر مسح */}
           {search && (
             <button
               onClick={() => setSearch("")}
@@ -171,7 +188,6 @@ export default function QuranPage() {
               className="group relative block rounded-2xl border border-[#c9a227]/25 bg-gradient-to-br from-white to-[#fdfcf7] p-5 hover:border-[#c9a227] hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
               <div className="flex flex-col items-center text-center space-y-2">
-                
                 <span
                   className="text-3xl font-bold text-gold"
                   style={{ fontFamily: "var(--font-amiri)" }}
@@ -199,7 +215,7 @@ export default function QuranPage() {
         </div>
       )}
 
-      {/* حالة عدم وجود نتائج */}
+      {/* عدم وجود نتائج */}
       {!loading && !error && filteredSurahs.length === 0 && search && (
         <div className="text-center py-16">
           <p className="text-neutral-500 mb-2">لا توجد نتائج لـ &quot;{search}&quot;</p>
@@ -211,6 +227,29 @@ export default function QuranPage() {
           </button>
         </div>
       )}
+
+      {/* CSS للبحث على الموبايل */}
+      <style jsx global>{`
+        /* على الشاشات الكبيرة */
+        .search-input {
+          padding: 14px 50px 14px 50px;
+          font-size: 16px;
+        }
+        
+        /* على الموبايل: أصغر */
+        @media (max-width: 768px) {
+          .search-input {
+            padding: 10px 42px 10px 42px !important;
+            font-size: 14px !important;
+            border-radius: 12px !important;
+          }
+          .search-icon {
+            right: 12px !important;
+            width: 16px !important;
+            height: 16px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
