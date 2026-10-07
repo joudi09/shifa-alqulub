@@ -27,7 +27,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // إغلاق القائمة عند تغيير الصفحة
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
@@ -40,16 +39,29 @@ export default function Navbar() {
   return (
     <>
       <header
-        className="sticky top-0 z-50 transition-all duration-300"
         style={{
-          backgroundColor: scrolled ? "rgba(253, 252, 247, 0.95)" : "rgba(253, 252, 247, 0.85)",
+          position: "sticky",
+          top: 0,
+          zIndex: 50,
+          transition: "all 0.3s",
+          backgroundColor: scrolled ? "rgba(253, 252, 247, 0.98)" : "rgba(253, 252, 247, 0.95)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           borderBottom: "1px solid rgba(201, 162, 39, 0.2)",
           boxShadow: scrolled ? "0 4px 20px rgba(139, 105, 20, 0.08)" : "0 1px 3px rgba(0, 0, 0, 0.03)",
         }}
       >
-        <nav className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-8 h-20">
+        <nav
+          style={{
+            maxWidth: "1280px",
+            margin: "0 auto",
+            padding: "0 16px",
+            height: "80px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           
           {/* الشعار */}
           <Link
@@ -57,11 +69,11 @@ export default function Navbar() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "12px",
+              gap: "10px",
               textDecoration: "none",
+              flexShrink: 0,
             }}
           >
-            {/* أيقونة الشعار */}
             <div
               style={{
                 width: "46px",
@@ -71,14 +83,9 @@ export default function Navbar() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 12px rgba(139, 105, 20, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)",
+                boxShadow: "0 4px 12px rgba(139, 105, 20, 0.25)",
                 transition: "transform 0.3s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "rotate(-5deg) scale(1.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "rotate(0deg) scale(1)";
+                flexShrink: 0,
               }}
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -88,28 +95,29 @@ export default function Navbar() {
               </svg>
             </div>
 
-            {/* اسم الموقع */}
             <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
               <span
                 style={{
-                  fontSize: "22px",
+                  fontSize: "20px",
                   fontWeight: 700,
                   background: "linear-gradient(135deg, #b8860b 0%, #daa520 50%, #8b6914 100%)",
                   WebkitBackgroundClip: "text",
                   backgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   fontFamily: "var(--font-amiri)",
+                  whiteSpace: "nowrap",
                 }}
               >
                 شفاء القلوب
               </span>
               <span
                 style={{
-                  fontSize: "9px",
+                  fontSize: "8px",
                   color: "#a8841c",
-                  letterSpacing: "3px",
+                  letterSpacing: "2px",
                   marginTop: "2px",
                   opacity: 0.7,
+                  whiteSpace: "nowrap",
                 }}
               >
                 SHIFA AL-QULUB
@@ -117,8 +125,9 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* روابط سطح المكتب */}
+          {/* روابط سطح المكتب - مخفية على الموبايل */}
           <ul
+            className="desktop-nav"
             style={{
               display: "flex",
               alignItems: "center",
@@ -127,7 +136,6 @@ export default function Navbar() {
               margin: 0,
               padding: 0,
             }}
-            className="hidden lg:flex"
           >
             {links.map((l) => {
               const active = isActive(l.href);
@@ -147,18 +155,6 @@ export default function Navbar() {
                       position: "relative",
                       backgroundColor: active ? "rgba(201, 162, 39, 0.08)" : "transparent",
                       whiteSpace: "nowrap",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!active) {
-                        e.currentTarget.style.backgroundColor = "rgba(201, 162, 39, 0.06)";
-                        e.currentTarget.style.color = "#8b6914";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!active) {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "#525252";
-                      }
                     }}
                   >
                     {l.label}
@@ -184,8 +180,8 @@ export default function Navbar() {
 
           {/* زر القائمة للموبايل */}
           <button
+            className="mobile-menu-btn"
             onClick={() => setOpen(!open)}
-            className="lg:hidden"
             aria-label="القائمة"
             style={{
               width: "44px",
@@ -194,11 +190,11 @@ export default function Navbar() {
               border: "1px solid rgba(201, 162, 39, 0.3)",
               backgroundColor: open ? "rgba(201, 162, 39, 0.1)" : "white",
               color: "#8b6914",
-              display: "flex",
               alignItems: "center",
               justifyContent: "center",
               cursor: "pointer",
               transition: "all 0.2s",
+              flexShrink: 0,
             }}
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
@@ -220,12 +216,13 @@ export default function Navbar() {
 
         {/* قائمة الموبايل */}
         <div
-          className="lg:hidden"
+          className="mobile-menu"
           style={{
             maxHeight: open ? "600px" : "0px",
             overflow: "hidden",
             transition: "max-height 0.4s ease",
             borderTop: open ? "1px solid rgba(201, 162, 39, 0.2)" : "none",
+            backgroundColor: "#fdfcf7",
           }}
         >
           <ul
@@ -281,7 +278,7 @@ export default function Navbar() {
       {/* Overlay للموبايل */}
       {open && (
         <div
-          className="lg:hidden"
+          className="mobile-overlay"
           onClick={() => setOpen(false)}
           style={{
             position: "fixed",
@@ -291,6 +288,35 @@ export default function Navbar() {
           }}
         />
       )}
+
+      {/* CSS لإخفاء/إظهار العناصر حسب حجم الشاشة */}
+      <style jsx global>{`
+        /* على الشاشات الكبيرة: إظهار الروابط، إخفاء زر القائمة */
+        @media (min-width: 1024px) {
+          .desktop-nav {
+            display: flex !important;
+          }
+          .mobile-menu-btn {
+            display: none !important;
+          }
+          .mobile-menu {
+            display: none !important;
+          }
+          .mobile-overlay {
+            display: none !important;
+          }
+        }
+        
+        /* على الشاشات الصغيرة: إخفاء الروابط، إظهار زر القائمة */
+        @media (max-width: 1023px) {
+          .desktop-nav {
+            display: none !important;
+          }
+          .mobile-menu-btn {
+            display: flex !important;
+          }
+        }
+      `}</style>
     </>
   );
 }
