@@ -76,6 +76,7 @@ export default function Home() {
         
         {/* الصف الأول: 3 بطاقات */}
         <div
+          className="home-grid-row"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
@@ -137,8 +138,9 @@ export default function Home() {
           ))}
         </div>
 
-        {/* الصف الثاني: 2 بطاقات في النص تماماً */}
+        {/* الصف الثاني: 2 بطاقات في النص */}
         <div
+          className="home-grid-row-2"
           style={{
             display: "flex",
             justifyContent: "center",
@@ -201,6 +203,23 @@ export default function Home() {
         </div>
 
       </section>
+
+      {/* CSS لإصلاح الموبايل */}
+      <style jsx global>{`
+        @media (max-width: 768px) {
+          .home-grid-row {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+          .home-grid-row-2 {
+            flex-direction: column !important;
+            align-items: center !important;
+          }
+          .home-grid-row-2 > a {
+            width: 100% !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
