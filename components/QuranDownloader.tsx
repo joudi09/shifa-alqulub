@@ -8,11 +8,12 @@ const TOTAL_SURAHS = 114;
 export default function QuranDownloader() {
   const [downloading, setDownloading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [currentSurah, setCurrentSurah] = useState("");
   const [showButton, setShowButton] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    // نتحقق من عدد السور المحفوظة
     const cached = getCachedCount();
 
     if (cached >= TOTAL_SURAHS) {
@@ -20,30 +21,34 @@ export default function QuranDownloader() {
       return;
     }
 
-    // نعرض الزر بعد 3 ثواني من فتح الموقع
     const timer = setTimeout(() => setShowButton(true), 3000);
     return () => clearTimeout(timer);
   }, []);
 
   const startDownload = async () => {
     setDownloading(true);
+    setError("");
     try {
       await downloadAllSurahs((current, total) => {
         setProgress(Math.round((current / total) * 100));
+        setCurrentSurah(`السورة ${current} من ${total}`);
       });
-      setCompleted(true);
-      setTimeout(() => setShowButton(false), 2000);
-    } catch (error) {
-      console.error("فشل التحميل:", error);
+      
+      const finalCount = getCachedCount();
+      if (finalCount >= TOTAL_SURAHS) {
+        setCompleted(true);
+        setTimeout(() => setShowButton(false), 2000);
+      } else {
+        setError(`تم تحميل ${finalCount} من ${TOTAL_SURAHS} سورة فقط`);
+      }
+    } catch (err) {
+      setError("فشل التحميل — تأكدي من الاتصال بالإنترنت");
     } finally {
       setDownloading(false);
     }
   };
 
-  // إذا كل السور محفوظة، ما نعرض شي
   if (completed && !downloading) return null;
-
-  // نعرض الزر فقط بعد 3 ثواني
   if (!showButton && !downloading) return null;
 
   return (
@@ -52,17 +57,17 @@ export default function QuranDownloader() {
         position: "fixed",
         bottom: "20px",
         left: "20px",
+        right: "20px",
         zIndex: 100,
-        maxWidth: "320px",
+        maxWidth: "340px",
+        margin: "0 auto",
         backgroundColor: "white",
         borderRadius: "16px",
         border: "2px solid #c9a227",
         padding: "16px",
-        boxShadow: "0 12px 32px rgba(139, 105, 20, 0.25)",
-        animation: "slideIn 0.3s ease-out",
+        boxShadow: "0 12px 32px rgba(139, 105, 20, 0.35)",
       }}
     >
-      {/* العنوان */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
         <div
           style={{
@@ -82,7 +87,7 @@ export default function QuranDownloader() {
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
         </div>
-        <div>
+        <div style={{ flex: 1 }}>
           <p
             style={{
               fontSize: "14px",
@@ -93,47 +98,63 @@ export default function QuranDownloader() {
               fontFamily: "var(--font-amiri)",
             }}
           >
-            {downloading ? "جاري التحميل..." : "قرآن بدون إنترنت"}
+            {downloading ? "جاري تحميل القرآن..." : "قرآن بدون إنترنت"}
           </p>
           <p style={{ fontSize: "11px", color: "#737373", margin: 0 }}>
-            {downloading
-              ? `تم تحميل ${progress}% من القرآن`
-              : "حمّل كل السور للعمل بدون إنترنت"}
+            {downloading ? currentSurah : "حمّل كل السور (يحتاج إنترنت مرة وحدة)"}
           </p>
         </div>
       </div>
 
-      {/* شريط التقدم */}
       {downloading && (
-        <div
-          style={{
-            height: "6px",
-            backgroundColor: "rgba(201, 162, 39, 0.15)",
-            borderRadius: "3px",
-            overflow: "hidden",
-            marginBottom: "12px",
-          }}
-        >
+        <>
           <div
             style={{
-              height: "100%",
-              width: `${progress}%`,
-              background: "linear-gradient(90deg, #daa520, #8b6914)",
-              borderRadius: "3px",
-              transition: "width 0.3s",
+              height: "8px",
+              backgroundColor: "rgba(201, 162, 39, 0.15)",
+              borderRadius: "4px",
+              overflow: "hidden",
+              marginBottom: "8px",
             }}
-          />
+          >
+            <div
+              style={{
+                height: "100%",
+                width: `${progress}%`,
+                background: "linear-gradient(90deg, #daa520, #8b6914)",
+                borderRadius: "4px",
+                transition: "width 0.3s",
+              }}
+            />
+          </div>
+          <p style={{ fontSize: "12px", color: "#8b6914", textAlign: "center", margin: 0, fontWeight: 600 }}>
+            {progress}%
+          </p>
+        </>
+      )}
+
+      {error && !downloading && (
+        <div
+          style={{
+            padding: "8px 12px",
+            backgroundColor: "rgba(220, 38, 38, 0.1)",
+            borderRadius: "8px",
+            marginBottom: "10px",
+          }}
+        >
+          <p style={{ fontSize: "11px", color: "#dc2626", margin: 0, textAlign: "center" }}>
+            {error}
+          </p>
         </div>
       )}
 
-      {/* الزر */}
       {!downloading && (
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             onClick={startDownload}
             style={{
               flex: 1,
-              padding: "10px 16px",
+              padding: "12px 16px",
               borderRadius: "10px",
               border: "none",
               background: "linear-gradient(135deg, #daa520 0%, #8b6914 100%)",
@@ -141,22 +162,15 @@ export default function QuranDownloader() {
               fontSize: "13px",
               fontWeight: 700,
               cursor: "pointer",
-              transition: "all 0.2s",
               fontFamily: "var(--font-cairo)",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-1px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
           >
-            تحميل الآن
+            {error ? "إعادة المحاولة" : "تحميل الآن"}
           </button>
           <button
             onClick={() => setShowButton(false)}
             style={{
-              padding: "10px 14px",
+              padding: "12px 14px",
               borderRadius: "10px",
               border: "1px solid rgba(201, 162, 39, 0.4)",
               backgroundColor: "white",
@@ -170,19 +184,6 @@ export default function QuranDownloader() {
           </button>
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes slideIn {
-          from {
-            transform: translateX(-100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-      `}</style>
     </div>
   );
 }

@@ -1,7 +1,10 @@
 const BASE_URL = "https://cdn.jsdelivr.net/npm/quran-cloud@1.0.0/dist/chapters";
-const CACHE_PREFIX = "quran_surah_";
+const CACHE_PREFIX = "qs_";
 const CACHE_VERSION = "v1";
 const TOTAL_SURAHS = 114;
+
+// ذاكرة مؤقتة في الجلسة (لمن localStorage يفشل)
+const memoryCache = new Map<number, SurahData>();
 
 export type Ayah = {
   id: number;
@@ -18,7 +21,6 @@ export type SurahData = {
   verses: Ayah[];
 };
 
-// نجيب السورة من الرابط
 export async function fetchSurah(surahNumber: number): Promise<SurahData> {
   const res = await fetch(`${BASE_URL}/${surahNumber}.json`);
   if (!res.ok) throw new Error("تعذر جلب السورة");
@@ -26,36 +28,43 @@ export async function fetchSurah(surahNumber: number): Promise<SurahData> {
   return data;
 }
 
-// نحفظ السورة في localStorage
 export function cacheSurah(surah: SurahData): void {
+  // نحفظ في الذاكرة دايماً
+  memoryCache.set(surah.id, surah);
+
+  // نحاول نحفظ في localStorage
   try {
     const key = `${CACHE_PREFIX}${CACHE_VERSION}_${surah.id}`;
     localStorage.setItem(key, JSON.stringify(surah));
   } catch (error) {
-    console.warn("فشل تخزين السورة:", error);
+    console.warn("localStorage ممتلئ، نستخدم الذاكرة فقط");
   }
 }
 
-// نجيب السورة من الذاكرة المحلية
 export function getCachedSurah(surahNumber: number): SurahData | null {
+  // أول شي من الذاكرة
+  if (memoryCache.has(surahNumber)) {
+    return memoryCache.get(surahNumber)!;
+  }
+
+  // بعدها من localStorage
   try {
     const key = `${CACHE_PREFIX}${CACHE_VERSION}_${surahNumber}`;
     const cached = localStorage.getItem(key);
     if (cached) {
-      return JSON.parse(cached) as SurahData;
+      const parsed = JSON.parse(cached) as SurahData;
+      memoryCache.set(surahNumber, parsed);
+      return parsed;
     }
   } catch (error) {
-    console.warn("فشل قراءة السورة من الذاكرة:", error);
+    console.warn("فشل قراءة السورة");
   }
   return null;
 }
 
-// نجيب السورة: أول من الذاكرة، إذا مو موجودة نجيبها من النت
 export async function getSurah(surahNumber: number): Promise<SurahData> {
   const cached = getCachedSurah(surahNumber);
-  if (cached) {
-    return cached;
-  }
+  if (cached) return cached;
 
   try {
     const surah = await fetchSurah(surahNumber);
@@ -66,13 +75,16 @@ export async function getSurah(surahNumber: number): Promise<SurahData> {
   }
 }
 
-// نتحقق إذا السورة محفوظة
 export function isSurahCached(surahNumber: number): boolean {
-  const key = `${CACHE_PREFIX}${CACHE_VERSION}_${surahNumber}`;
-  return localStorage.getItem(key) !== null;
+  if (memoryCache.has(surahNumber)) return true;
+  try {
+    const key = `${CACHE_PREFIX}${CACHE_VERSION}_${surahNumber}`;
+    return localStorage.getItem(key) !== null;
+  } catch {
+    return false;
+  }
 }
 
-// عدد السور المحفوظة
 export function getCachedCount(): number {
   let count = 0;
   for (let i = 1; i <= TOTAL_SURAHS; i++) {
@@ -81,13 +93,11 @@ export function getCachedCount(): number {
   return count;
 }
 
-// ⭐ تحميل كل السور تدريجياً في الخلفية
 export async function downloadAllSurahs(
   onProgress?: (current: number, total: number) => void
 ): Promise<void> {
-  // نبدأ بالسور الشائعة أولاً
   const popular = [1, 18, 36, 55, 67, 56, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  const remaining = [];
+  const remaining: number[] = [];
   for (let i = 1; i <= TOTAL_SURAHS; i++) {
     if (!popular.includes(i)) remaining.push(i);
   }
@@ -96,7 +106,6 @@ export async function downloadAllSurahs(
   let downloaded = 0;
 
   for (const num of allSurahs) {
-    // إذا محفوظة مسبقاً، نتجاوزها
     if (isSurahCached(num)) {
       downloaded++;
       if (onProgress) onProgress(downloaded, TOTAL_SURAHS);
@@ -107,14 +116,10 @@ export async function downloadAllSurahs(
       const surah = await fetchSurah(num);
       cacheSurah(surah);
       downloaded++;
-
       if (onProgress) onProgress(downloaded, TOTAL_SURAHS);
-
-      // ننتظر 200 ملي ثانية بين كل سورة عشان ما نزحم النت
       await new Promise((r) => setTimeout(r, 200));
     } catch (error) {
       console.warn(`فشل تحميل سورة ${num}:`, error);
-      // نستمر في تحميل الباقي حتى لو فشل واحد
     }
   }
 }
