@@ -1,55 +1,75 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { downloadAllSurahs, getCachedCount } from "@/lib/quran";
 
 const TOTAL_SURAHS = 114;
 
 export default function QuranDownloader() {
   const [downloading, setDownloading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [currentSurah, setCurrentSurah] = useState("");
-  const [showButton, setShowButton] = useState(false);
+  const [currentSurah, setCurrentSurah] = useState(0);
   const [completed, setCompleted] = useState(false);
-  const [error, setError] = useState("");
+  const [showButton, setShowButton] = useState(false);
+  const [downloadCount, setDownloadCount] = useState(0);
 
   useEffect(() => {
-    const cached = getCachedCount();
+    // نتحقق من حالة التحميل
+    const checkStatus = () => {
+      if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: "CHECK_QURAN_STATUS" });
+      }
+    };
 
-    if (cached >= TOTAL_SURAHS) {
-      setCompleted(true);
+    // نستمع للرسائل من Service Worker
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === "QURAN_PROGRESS") {
+        const { current, total } = event.data;
+        setDownloadCount(current);
+        setProgress(Math.round((current / total) * 100));
+        setCurrentSurah(current);
+      }
+
+      if (event.data?.type === "QURAN_COMPLETE") {
+        setCompleted(true);
+        setDownloading(false);
+        setProgress(100);
+        setTimeout(() => setShowButton(false), 3000);
+      }
+
+      if (event.data?.type === "QURAN_STATUS") {
+        const { count, total } = event.data;
+        if (count >= total) {
+          setCompleted(true);
+        } else {
+          setShowButton(true);
+        }
+      }
+    };
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", handleMessage);
+      setTimeout(checkStatus, 2000);
+    }
+
+    return () => {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.removeEventListener("message", handleMessage);
+      }
+    };
+  }, []);
+
+  const startDownload = () => {
+    if (!("serviceWorker" in navigator) || !navigator.serviceWorker.controller) {
+      alert("جاري تحضير التطبيق... حاولي مرة ثانية بعد لحظات");
       return;
     }
 
-    const timer = setTimeout(() => setShowButton(true), 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const startDownload = async () => {
     setDownloading(true);
-    setError("");
-    try {
-      await downloadAllSurahs((current, total) => {
-        setProgress(Math.round((current / total) * 100));
-        setCurrentSurah(`السورة ${current} من ${total}`);
-      });
-      
-      const finalCount = getCachedCount();
-      if (finalCount >= TOTAL_SURAHS) {
-        setCompleted(true);
-        setTimeout(() => setShowButton(false), 2000);
-      } else {
-        setError(`تم تحميل ${finalCount} من ${TOTAL_SURAHS} سورة فقط`);
-      }
-    } catch (err) {
-      setError("فشل التحميل — تأكدي من الاتصال بالإنترنت");
-    } finally {
-      setDownloading(false);
-    }
+    setProgress(0);
+    navigator.serviceWorker.controller.postMessage({ type: "DOWNLOAD_ALL_QURAN" });
   };
 
-  if (completed && !downloading) return null;
-  if (!showButton && !downloading) return null;
+  if (completed || !showButton) return null;
 
   return (
     <div
@@ -58,7 +78,7 @@ export default function QuranDownloader() {
         bottom: "20px",
         left: "20px",
         right: "20px",
-        zIndex: 100,
+        zIndex: 9999,
         maxWidth: "340px",
         margin: "0 auto",
         backgroundColor: "white",
@@ -101,7 +121,9 @@ export default function QuranDownloader() {
             {downloading ? "جاري تحميل القرآن..." : "قرآن بدون إنترنت"}
           </p>
           <p style={{ fontSize: "11px", color: "#737373", margin: 0 }}>
-            {downloading ? currentSurah : "حمّل كل السور (يحتاج إنترنت مرة وحدة)"}
+            {downloading
+              ? `السورة ${currentSurah} من ${TOTAL_SURAHS}`
+              : "حمّلي كل السور (يحتاج إنترنت مرة وحدة)"}
           </p>
         </div>
       </div>
@@ -133,21 +155,6 @@ export default function QuranDownloader() {
         </>
       )}
 
-      {error && !downloading && (
-        <div
-          style={{
-            padding: "8px 12px",
-            backgroundColor: "rgba(220, 38, 38, 0.1)",
-            borderRadius: "8px",
-            marginBottom: "10px",
-          }}
-        >
-          <p style={{ fontSize: "11px", color: "#dc2626", margin: 0, textAlign: "center" }}>
-            {error}
-          </p>
-        </div>
-      )}
-
       {!downloading && (
         <div style={{ display: "flex", gap: "8px" }}>
           <button
@@ -165,7 +172,7 @@ export default function QuranDownloader() {
               fontFamily: "var(--font-cairo)",
             }}
           >
-            {error ? "إعادة المحاولة" : "تحميل الآن"}
+            تحميل الآن
           </button>
           <button
             onClick={() => setShowButton(false)}
