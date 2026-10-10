@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { getSurah, isSurahCached, type SurahData } from "@/lib/quran";
+import { getSurah, type SurahData } from "@/lib/quran";
 
 const formatAyahCount = (count: number): string => {
   if (count === 1) return "آية واحدة";
@@ -21,7 +21,6 @@ export default function SurahContent() {
   const [fontSize, setFontSize] = useState(28);
   const [savedAyah, setSavedAyah] = useState<number>(0);
   const [showToast, setShowToast] = useState(false);
-  const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
     const savedSurah = localStorage.getItem("last_read_surah");
@@ -37,10 +36,6 @@ export default function SurahContent() {
     if (!surahNumber) return;
     setLoading(true);
     const surahNum = parseInt(surahNumber);
-
-    // نتحقق إذا السورة محفوظة
-    const wasCached = isSurahCached(surahNum);
-    setIsOffline(wasCached);
 
     getSurah(surahNum)
       .then((data) => {
@@ -121,29 +116,6 @@ export default function SurahContent() {
             <path d="M20 6L9 17l-5-5" />
           </svg>
           تم حفظ مكان القراءة
-        </div>
-      )}
-
-      {/* شارة offline */}
-      {isOffline && (
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            padding: "4px 12px",
-            borderRadius: "20px",
-            backgroundColor: "rgba(22, 163, 74, 0.1)",
-            color: "#16a34a",
-            fontSize: "11px",
-            fontWeight: 600,
-            marginBottom: "12px",
-          }}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 6L9 17l-5-5" />
-          </svg>
-          متاحة بدون إنترنت
         </div>
       )}
 

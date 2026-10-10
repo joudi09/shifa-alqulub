@@ -6,9 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FatihaModal from "@/components/FatihaModal";
 import FridayReminder from "@/components/FridayReminder";
-import QuranDownloader from "@/components/QuranDownloader";
 import NotificationManager from "@/components/NotificationManager";
-import InstallButton from "@/components/InstallButton";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const cairo = Cairo({
@@ -71,9 +69,7 @@ export default function RootLayout({
         </Suspense>
         <FridayReminder />
         <FatihaModal />
-        <QuranDownloader />
         <NotificationManager />
-        <InstallButton />
         <ServiceWorkerRegister />
         <main className="min-h-screen">{children}</main>
         <Footer />
