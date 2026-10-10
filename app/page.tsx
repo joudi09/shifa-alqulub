@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import PrayerTimes from "@/components/PrayerTimes";
+import ContinueReading from "@/components/ContinueReading";
 
 const features = [
   {
@@ -67,6 +68,9 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      {/* استمرار القراءة */}
+      <ContinueReading />
 
       {/* أوقات الصلاة */}
       <PrayerTimes />
@@ -201,10 +205,9 @@ export default function Home() {
             </Link>
           ))}
         </div>
-
       </section>
 
-      {/* CSS لإصلاح الموبايل */}
+      {/* CSS للموبايل */}
       <style jsx global>{`
         @media (max-width: 768px) {
           .home-grid-row {
