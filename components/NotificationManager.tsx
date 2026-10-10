@@ -8,7 +8,7 @@ import {
   markVerseSent,
 } from "@/lib/dailyVerses";
 
-const CHECK_INTERVAL = 60 * 1000; // كل دقيقة
+const CHECK_INTERVAL = 60 * 1000;
 
 const shouldNotify = (day: number, hour: number): boolean => {
   const now = new Date();
@@ -45,7 +45,6 @@ export default function NotificationManager() {
     if (permission !== "granted") return;
 
     const checkNotifications = () => {
-      // 🕌 إشعار الجمعة — الساعة 8 صباحاً
       if (shouldNotify(5, 8) && !alreadySent("friday")) {
         new Notification("🕌 يوم الجمعة المبارك", {
           body: "لا تنسَ قراءة سورة الكهف\n﴿إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ﴾",
@@ -55,7 +54,6 @@ export default function NotificationManager() {
         markAsSent("friday");
       }
 
-      // 🌙 إشعار الخميس — الساعة 6 مساءً
       if (shouldNotify(4, 18) && !alreadySent("thursday")) {
         new Notification("🌙 غداً الجمعة", {
           body: "استعد لقراءة سورة الكهف والصلاة على النبي ﷺ",
@@ -65,7 +63,6 @@ export default function NotificationManager() {
         markAsSent("thursday");
       }
 
-      // ✨ آية اليوم — الساعة 9 صباحاً
       if (shouldSendDailyVerse() && !wasVerseSentToday()) {
         const verse = getDailyVerse();
         new Notification("✨ آية اليوم", {
@@ -106,7 +103,7 @@ export default function NotificationManager() {
     <div
       style={{
         position: "fixed",
-        bottom: "20px",
+        bottom: "140px",
         right: "20px",
         zIndex: 9998,
         maxWidth: "320px",
@@ -189,4 +186,4 @@ export default function NotificationManager() {
       </div>
     </div>
   );
-} 
+}
