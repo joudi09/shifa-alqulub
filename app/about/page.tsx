@@ -66,7 +66,6 @@ export default function AboutPage() {
           overflow: "hidden",
         }}
       >
-        {/* زخرفة خلفية */}
         <div
           style={{
             position: "absolute",
@@ -91,7 +90,7 @@ export default function AboutPage() {
               marginBottom: "8px",
             }}
           >
-            Joudi Ibrahim Sabbagh
+      
           </p>
 
           <h2
@@ -106,7 +105,7 @@ export default function AboutPage() {
               WebkitTextFillColor: "transparent",
             }}
           >
-           
+            Joudy Ibrahim Sabbagh
           </h2>
 
           <p
@@ -119,7 +118,7 @@ export default function AboutPage() {
               fontWeight: 500,
             }}
           >
-          
+            Software Engineer
           </p>
 
           <div

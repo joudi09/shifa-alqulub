@@ -15,31 +15,26 @@ export default function InstallButton() {
   const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
-    // نتحقق إذا المستخدم رفض الزر
     const wasDismissed = localStorage.getItem("install_button_dismissed");
     if (wasDismissed === "true") {
       setDismissed(true);
       return;
     }
 
-    // نتحقق إذا الموقع مثبّت أصلاً
     if (window.matchMedia("(display-mode: standalone)").matches) {
       setShow(false);
       return;
     }
 
-    // نتحقق إذا iOS
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(isIOSDevice);
 
-    // لـ iOS: نعرض التعليمات
     if (isIOSDevice) {
       setTimeout(() => setShow(true), 5000);
       return;
     }
 
-    // لـ Android/Chrome: نستخدم beforeinstallprompt
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -168,7 +163,6 @@ export default function InstallButton() {
         </div>
       </div>
 
-      {/* تعليمات iOS */}
       {showIOSInstructions && (
         <div
           onClick={() => setShowIOSInstructions(false)}
@@ -225,10 +219,10 @@ export default function InstallButton() {
                 <span style={{ fontSize: "18px" }}>⬆️</span> في Safari
               </div>
               <div>
-                <strong>2.</strong> اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong>
+                <strong>2.</strong> اختر <strong>&quot;إضافة إلى الشاشة الرئيسية&quot;</strong>
               </div>
               <div>
-                <strong>3.</strong> اضغط <strong>"إضافة"</strong>
+                <strong>3.</strong> اضغط <strong>&quot;إضافة&quot;</strong>
               </div>
             </div>
 

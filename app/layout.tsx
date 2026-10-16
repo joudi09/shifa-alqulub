@@ -29,8 +29,7 @@ export const metadata: Metadata = {
     default: "اِبْنُ جَنَّتِك",
     template: "%s | اِبْنُ جَنَّتِك",
   },
-  description:
-    "نور يقودك إلى جنة الرحمن — قرآن، أذكار، أدعية، وتسبيح",
+  description: "نور يقودك إلى جنة الرحمن — قرآن، أذكار، أدعية، وتسبيح",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

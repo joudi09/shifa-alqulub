@@ -3,7 +3,6 @@ export default function Footer() {
     <footer className="mt-20 border-t border-[#c9a227]/30 bg-[#fdfcf7]">
       <div className="max-w-7xl mx-auto px-6 py-12">
         
-        {/* الآية */}
         <div className="text-center space-y-4 mb-8">
           <p
             className="text-3xl md:text-4xl text-gold leading-relaxed"
@@ -16,7 +15,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* معلومات المطوّر */}
         <div className="text-center space-y-3 pt-6 border-t border-[#c9a227]/20">
           <p className="text-[11px] tracking-[4px] text-[#a8841c] font-semibold uppercase">
             Developed by
@@ -31,17 +29,16 @@ export default function Footer() {
               WebkitTextFillColor: "transparent",
             }}
           >
-            Joudi Ibrahim Sabbagh
+            Judy Ibrahim Sabbagh
           </p>
           <p className="text-[11px] tracking-[3px] text-[#a8841c]/70 font-medium uppercase">
             Software Engineer
           </p>
         </div>
 
-        {/* حقوق النشر */}
         <div className="text-center mt-8 pt-6 border-t border-[#c9a227]/20">
           <p className="text-xs text-neutral-500">
-        
+            © 2025 اِبْنُ جَنَّتِك — جميع الحقوق محفوظة
           </p>
         </div>
       </div>

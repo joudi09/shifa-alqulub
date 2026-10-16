@@ -62,47 +62,67 @@ export default function Navbar() {
             justifyContent: "space-between",
           }}
         >
-          
-          {/* الشعار - بدون أيقونة */}
           <Link
             href="/"
             style={{
               display: "flex",
-              flexDirection: "column",
-              lineHeight: 1,
+              alignItems: "center",
+              gap: "10px",
               textDecoration: "none",
               flexShrink: 0,
             }}
           >
-            <span
+            <div
               style={{
-                fontSize: "24px",
-                fontWeight: 700,
-                background: "linear-gradient(135deg, #b8860b 0%, #daa520 50%, #8b6914 100%)",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                fontFamily: "var(--font-amiri)",
-                whiteSpace: "nowrap",
+                width: "46px",
+                height: "46px",
+                borderRadius: "14px",
+                background: "linear-gradient(135deg, #daa520 0%, #8b6914 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 4px 12px rgba(139, 105, 20, 0.25)",
+                transition: "transform 0.3s",
+                flexShrink: 0,
               }}
             >
-              اِبْنُ جَنَّتِك
-            </span>
-            <span
-              style={{
-                fontSize: "8px",
-                color: "#a8841c",
-                letterSpacing: "2px",
-                marginTop: "4px",
-                opacity: 0.7,
-                whiteSpace: "nowrap",
-              }}
-            >
-              IBN JANNATAK
-            </span>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
+              <span
+                style={{
+                  fontSize: "20px",
+                  fontWeight: 700,
+                  background: "linear-gradient(135deg, #b8860b 0%, #daa520 50%, #8b6914 100%)",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  fontFamily: "var(--font-amiri)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                اِبْنُ جَنَّتِك
+              </span>
+              <span
+                style={{
+                  fontSize: "8px",
+                  color: "#a8841c",
+                  letterSpacing: "2px",
+                  marginTop: "2px",
+                  opacity: 0.7,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                IBN JANNATAK
+              </span>
+            </div>
           </Link>
 
-          {/* روابط سطح المكتب */}
           <ul
             className="desktop-nav"
             style={{
@@ -155,7 +175,6 @@ export default function Navbar() {
             })}
           </ul>
 
-          {/* زر القائمة للموبايل */}
           <button
             className="mobile-menu-btn"
             onClick={() => setOpen(!open)}
@@ -191,7 +210,6 @@ export default function Navbar() {
           </button>
         </nav>
 
-        {/* قائمة الموبايل */}
         <div
           className="mobile-menu"
           style={{
@@ -252,7 +270,6 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Overlay للموبايل */}
       {open && (
         <div
           className="mobile-overlay"
