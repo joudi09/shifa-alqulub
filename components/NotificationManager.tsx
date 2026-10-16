@@ -46,7 +46,7 @@ export default function NotificationManager() {
 
     const checkNotifications = () => {
       if (shouldNotify(5, 8) && !alreadySent("friday")) {
-        new Notification("🕌 يوم الجمعة المبارك", {
+        new Notification(" يوم الجمعة المبارك", {
           body: "لا تنسَ قراءة سورة الكهف\n﴿إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ﴾",
           icon: "/web-app-manifest-192x192.png",
           badge: "/web-app-manifest-192x192.png",
@@ -55,7 +55,7 @@ export default function NotificationManager() {
       }
 
       if (shouldNotify(4, 18) && !alreadySent("thursday")) {
-        new Notification("🌙 غداً الجمعة", {
+        new Notification(" غداً الجمعة", {
           body: "استعد لقراءة سورة الكهف والصلاة على النبي ﷺ",
           icon: "/web-app-manifest-192x192.png",
           badge: "/web-app-manifest-192x192.png",
@@ -65,7 +65,7 @@ export default function NotificationManager() {
 
       if (shouldSendDailyVerse() && !wasVerseSentToday()) {
         const verse = getDailyVerse();
-        new Notification("✨ آية اليوم", {
+        new Notification(" آية اليوم", {
           body: `﴿${verse.text}﴾\n\nسورة ${verse.surah} — الآية ${verse.ayah}`,
           icon: "/web-app-manifest-192x192.png",
           badge: "/web-app-manifest-192x192.png",
@@ -90,7 +90,7 @@ export default function NotificationManager() {
 
     if (result === "granted") {
       setShowAskButton(false);
-      new Notification("✅ تم تفعيل الإشعارات", {
+      new Notification(" تم تفعيل الإشعارات", {
         body: "سنذكّرك بآية اليوم وسورة الكهف وأذكار الصباح والمساء",
         icon: "/web-app-manifest-192x192.png",
       });

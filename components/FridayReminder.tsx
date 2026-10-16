@@ -70,7 +70,7 @@ export default function FridayReminder() {
               fontFamily: "var(--font-amiri)",
             }}
           >
-            🕌 يوم الجمعة المبارك — لا تنسَ قراءة سورة الكهف
+            يوم الجمعة المبارك — لا تنسَ قراءة سورة الكهف
           </p>
         </div>
 
