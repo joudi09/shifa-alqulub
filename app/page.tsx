@@ -49,7 +49,7 @@ export default function Home() {
             className="text-6xl sm:text-7xl md:text-8xl font-bold text-gold gold-glow leading-tight"
             style={{ fontFamily: "var(--font-amiri)" }}
           >
-            شفاء القلوب
+            اِبْنُ جَنَّتِك
           </h1>
 
           <p className="text-lg md:text-xl text-neutral-700 max-w-2xl mx-auto leading-relaxed">

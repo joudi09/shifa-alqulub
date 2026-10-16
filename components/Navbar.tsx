@@ -86,7 +86,7 @@ export default function Navbar() {
                 whiteSpace: "nowrap",
               }}
             >
-              شفاء القلوب
+              اِبْنُ جَنَّتِك
             </span>
             <span
               style={{
@@ -98,7 +98,7 @@ export default function Navbar() {
                 whiteSpace: "nowrap",
               }}
             >
-              SHIFA AL-QULUB
+              IBN JANNATAK
             </span>
           </Link>
 

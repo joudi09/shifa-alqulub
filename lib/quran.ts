@@ -15,22 +15,15 @@ export type SurahData = {
   verses: Ayah[];
 };
 
-// نجيب السورة من الملفات المحلية (public/quran-data/)
 export async function getSurah(surahNumber: number): Promise<SurahData> {
-  try {
-    const res = await fetch(`/quran-data/${surahNumber}.json`);
-    if (!res.ok) {
-      throw new Error("السورة غير متوفرة");
-    }
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    throw new Error("تعذر جلب السورة");
+  const res = await fetch(`/quran-data/${surahNumber}.json`);
+  if (!res.ok) {
+    throw new Error("السورة غير متوفرة");
   }
+  return res.json();
 }
 
 export function isSurahCached(_surahNumber: number): boolean {
-  // كل السور محلية الآن
   return true;
 }
 

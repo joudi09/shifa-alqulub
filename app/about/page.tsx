@@ -37,7 +37,7 @@ export default function AboutPage() {
             fontFamily: "var(--font-amiri)",
           }}
         >
-          شفاء القلوب
+          اِبْنُ جَنَّتِك
         </h2>
         <p
           style={{

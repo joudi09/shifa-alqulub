@@ -128,7 +128,7 @@ export default function InstallButton() {
               ثبّت التطبيق
             </p>
             <p style={{ fontSize: "11px", color: "#737373", margin: 0, lineHeight: 1.4 }}>
-              أضف شفاء القلوب لشاشتك الرئيسية
+              أضف اِبْنُ جَنَّتِك لشاشتك الرئيسية
             </p>
           </div>
         </div>

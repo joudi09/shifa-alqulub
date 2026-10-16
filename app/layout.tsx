@@ -26,16 +26,16 @@ const amiri = Amiri({
 
 export const metadata: Metadata = {
   title: {
-    default: "شفاء القلوب",
-    template: "%s | شفاء القلوب",
+    default: "اِبْنُ جَنَّتِك",
+    template: "%s | اِبْنُ جَنَّتِك",
   },
   description:
-    "موقع إسلامي شامل: القرآن الكريم، أذكار الصباح والمساء، الأدعية، والتسبيح",
+    "نور يقودك إلى جنة الرحمن — قرآن، أذكار، أدعية، وتسبيح",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "شفاء القلوب",
+    title: "اِبْنُ جَنَّتِك",
   },
   icons: {
     icon: [

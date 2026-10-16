@@ -12,6 +12,13 @@ export default function FatihaModal() {
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
+    // نتحقق: هل المستخدم شاف الرسالة من قبل؟
+    const hasSeen = localStorage.getItem("fatiha_seen");
+
+    if (hasSeen === "true") {
+      return; // خلص شافها، ما تطلع
+    }
+
     const timer = setTimeout(() => setShow(true), 800);
     return () => clearTimeout(timer);
   }, []);
@@ -19,6 +26,8 @@ export default function FatihaModal() {
   const handleClose = () => {
     setClosing(true);
     setTimeout(() => {
+      // نحفظ إنه شافها للأبد
+      localStorage.setItem("fatiha_seen", "true");
       setShow(false);
       setClosing(false);
     }, 300);
@@ -60,7 +69,6 @@ export default function FatihaModal() {
           overflow: "hidden",
         }}
       >
-        {/* إطار داخلي ذهبي */}
         <div
           style={{
             position: "absolute",
@@ -73,7 +81,6 @@ export default function FatihaModal() {
 
         <div style={{ position: "relative", textAlign: "center" }}>
           
-          {/* ﷽ */}
           <div
             style={{
               fontSize: "28px",
@@ -86,7 +93,6 @@ export default function FatihaModal() {
             ﷽
           </div>
 
-          {/* العنوان */}
           <h2
             style={{
               fontSize: "20px",
@@ -109,7 +115,6 @@ export default function FatihaModal() {
             }}
           />
 
-          {/* الأسماء - صفين */}
           <div
             style={{
               display: "flex",
@@ -171,7 +176,6 @@ export default function FatihaModal() {
             }}
           />
 
-          {/* سورة الفاتحة كاملة */}
           <div
             style={{
               backgroundColor: "rgba(201, 162, 39, 0.06)",
@@ -181,7 +185,6 @@ export default function FatihaModal() {
               marginBottom: "16px",
             }}
           >
-            {/* البسملة */}
             <p
               style={{
                 fontSize: "20px",
@@ -199,7 +202,6 @@ export default function FatihaModal() {
               بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
             </p>
 
-            {/* الآيات */}
             <p
               style={{
                 fontSize: "17px",
@@ -214,7 +216,6 @@ export default function FatihaModal() {
             </p>
           </div>
 
-          {/* دعاء */}
           <p
             style={{
               fontSize: "13px",
@@ -227,7 +228,6 @@ export default function FatihaModal() {
             اللَّهُمَّ اغْفِرْ لَهُمْ وَارْحَمْهُمْ وَعَافِهِمْ وَاعْفُ عَنْهُمْ
           </p>
 
-          {/* الزر */}
           <button
             onClick={handleClose}
             style={{
@@ -242,14 +242,6 @@ export default function FatihaModal() {
               boxShadow: "0 4px 14px rgba(139, 105, 20, 0.3)",
               transition: "all 0.2s",
               fontFamily: "var(--font-cairo)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = "0 6px 20px rgba(139, 105, 20, 0.4)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 14px rgba(139, 105, 20, 0.3)";
             }}
           >
             ✓ قرأت الفاتحة
