@@ -32,7 +32,6 @@ export default function TasbihPage() {
   const [newDhikrText, setNewDhikrText] = useState("");
   const [newDhikrTarget, setNewDhikrTarget] = useState(33);
 
-  // استرجاع الأذكار المخصصة
   useEffect(() => {
     const saved = localStorage.getItem("custom_dhikrs");
     if (saved) {
@@ -42,7 +41,6 @@ export default function TasbihPage() {
     }
   }, []);
 
-  // استرجاع بيانات الذكر المحدد
   useEffect(() => {
     const saved = localStorage.getItem(`tasbih_${selectedDhikr.id}`);
     if (saved) {
@@ -57,7 +55,6 @@ export default function TasbihPage() {
     }
   }, [selectedDhikr.id]);
 
-  // حفظ تلقائي
   useEffect(() => {
     const data = { count, rounds, target };
     localStorage.setItem(`tasbih_${selectedDhikr.id}`, JSON.stringify(data));
@@ -88,7 +85,6 @@ export default function TasbihPage() {
     }
   };
 
-  // إضافة ذكر مخصص
   const handleAddCustom = () => {
     const trimmed = newDhikrText.trim();
     if (!trimmed) {
@@ -117,7 +113,6 @@ export default function TasbihPage() {
     setShowAddForm(false);
   };
 
-  // حذف ذكر مخصص
   const handleDeleteCustom = (id: string) => {
     if (!confirm("هل أنت متأكد من حذف هذا الذكر؟")) return;
 
@@ -137,7 +132,6 @@ export default function TasbihPage() {
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">
       
-      {/* العنوان */}
       <div className="text-center mb-8">
         <h1
           className="text-4xl md:text-5xl font-bold text-gold gold-glow mb-3"
@@ -153,7 +147,6 @@ export default function TasbihPage() {
         </p>
       </div>
 
-      {/* اختيار الذكر */}
       <div
         style={{
           display: "flex",
@@ -204,7 +197,6 @@ export default function TasbihPage() {
                 {d.text}
               </button>
 
-              {/* زر حذف للذكر المخصص */}
               {d.isCustom && (
                 <button
                   onClick={(e) => {
@@ -239,7 +231,6 @@ export default function TasbihPage() {
           );
         })}
 
-        {/* زر إضافة ذكر */}
         <button
           onClick={() => {
             setShowAddForm(!showAddForm);
@@ -269,7 +260,6 @@ export default function TasbihPage() {
         </button>
       </div>
 
-      {/* نموذج إضافة ذكر */}
       {showAddForm && (
         <div
           style={{
@@ -323,14 +313,6 @@ export default function TasbihPage() {
               textAlign: "right",
               boxSizing: "border-box",
             }}
-            onFocus={(e) => {
-              e.target.style.borderColor = "#c9a227";
-              e.target.style.boxShadow = "0 0 0 3px rgba(201, 162, 39, 0.1)";
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = "rgba(201, 162, 39, 0.4)";
-              e.target.style.boxShadow = "none";
-            }}
           />
 
           <label
@@ -362,17 +344,8 @@ export default function TasbihPage() {
               textAlign: "center",
               boxSizing: "border-box",
             }}
-            onFocus={(e) => {
-              e.target.style.borderColor = "#c9a227";
-              e.target.style.boxShadow = "0 0 0 3px rgba(201, 162, 39, 0.1)";
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = "rgba(201, 162, 39, 0.4)";
-              e.target.style.boxShadow = "none";
-            }}
           />
 
-          {/* أزرار سريعة للهدف */}
           <div
             style={{
               display: "flex",
@@ -405,7 +378,6 @@ export default function TasbihPage() {
             ))}
           </div>
 
-          {/* أزرار الإجراء */}
           <div
             style={{
               display: "flex",
@@ -429,7 +401,7 @@ export default function TasbihPage() {
                 transition: "all 0.2s",
               }}
             >
-              ✓ إضافة الذكر
+              إضافة الذكر
             </button>
             <button
               onClick={() => {
@@ -455,7 +427,6 @@ export default function TasbihPage() {
         </div>
       )}
 
-      {/* البطاقة الرئيسية */}
       <div
         style={{
           backgroundColor: "white",
@@ -493,7 +464,6 @@ export default function TasbihPage() {
           {selectedDhikr.text}
         </p>
 
-        {/* العدّاد */}
         <div
           style={{
             display: "flex",
@@ -555,7 +525,6 @@ export default function TasbihPage() {
           </div>
         </div>
 
-        {/* معلومات الدورات */}
         <div
           style={{
             display: "flex",
@@ -601,7 +570,6 @@ export default function TasbihPage() {
           </div>
         </div>
 
-        {/* زر التسبيح */}
         <button
           onClick={handleTasbih}
           style={{
@@ -619,23 +587,10 @@ export default function TasbihPage() {
             fontFamily: "var(--font-amiri)",
             letterSpacing: "1px",
           }}
-          onMouseDown={(e) => {
-            e.currentTarget.style.transform = "scale(0.98)";
-            e.currentTarget.style.boxShadow = "0 4px 12px rgba(139, 105, 20, 0.4)";
-          }}
-          onMouseUp={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-            e.currentTarget.style.boxShadow = "0 8px 24px rgba(139, 105, 20, 0.3)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-            e.currentTarget.style.boxShadow = "0 8px 24px rgba(139, 105, 20, 0.3)";
-          }}
         >
           سَبِّح
         </button>
 
-        {/* أزرار صغيرة */}
         <div
           style={{
             display: "flex",
@@ -656,9 +611,17 @@ export default function TasbihPage() {
               fontWeight: 600,
               cursor: "pointer",
               transition: "all 0.2s",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontFamily: "var(--font-cairo)",
             }}
           >
-            ⚙️ تغيير الهدف
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+            تغيير الهدف
           </button>
 
           <button
@@ -673,13 +636,20 @@ export default function TasbihPage() {
               fontWeight: 600,
               cursor: "pointer",
               transition: "all 0.2s",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontFamily: "var(--font-cairo)",
             }}
           >
-            🔄 إعادة تعيين
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            إعادة تعيين
           </button>
         </div>
 
-        {/* إعدادات الهدف */}
         {showSettings && (
           <div
             style={{
@@ -739,7 +709,6 @@ export default function TasbihPage() {
         )}
       </div>
 
-      {/* آية */}
       <p
         className="text-center mt-10"
         style={{

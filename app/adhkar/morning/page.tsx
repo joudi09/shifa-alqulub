@@ -26,15 +26,9 @@ export default function MorningAdhkarPage() {
     window.location.reload();
   };
 
-  const completedCount = adhkar.filter((d) => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem(`dhikr_${d.id}`) : null;
-    return saved && parseInt(saved) >= d.count;
-  }).length;
-
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">
       
-      {/* العنوان */}
       <div className="text-center mb-10">
         <h1
           className="text-4xl md:text-5xl font-bold text-gold gold-glow mb-3"
@@ -50,7 +44,6 @@ export default function MorningAdhkarPage() {
         </p>
       </div>
 
-      {/* شريط الحالة */}
       <div
         style={{
           backgroundColor: "rgba(201, 162, 39, 0.08)",
@@ -66,7 +59,8 @@ export default function MorningAdhkarPage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div            style={{
+          <div
+            style={{
               width: "40px",
               height: "40px",
               borderRadius: "12px",
@@ -104,13 +98,20 @@ export default function MorningAdhkarPage() {
             fontWeight: 600,
             cursor: "pointer",
             transition: "all 0.2s",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontFamily: "var(--font-cairo)",
           }}
         >
-          🔄 إعادة تعيين الكل
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+          إعادة تعيين الكل
         </button>
       </div>
 
-      {/* الأذكار */}
       <div key={resetKey}>
         {adhkar.map((dhikr) => (
           <DhikrCard key={dhikr.id} dhikr={dhikr} />

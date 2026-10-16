@@ -14,13 +14,11 @@ export default function DhikrCard({ dhikr }: { dhikr: Dhikr }) {
   const [currentCount, setCurrentCount] = useState(0);
   const [copied, setCopied] = useState(false);
 
-  // استرجاع العداد من localStorage
   useEffect(() => {
     const saved = localStorage.getItem(`dhikr_${dhikr.id}`);
     if (saved) setCurrentCount(parseInt(saved));
   }, [dhikr.id]);
 
-  // حفظ العداد
   const incrementCount = () => {
     if (currentCount < dhikr.count) {
       const newCount = currentCount + 1;
@@ -59,7 +57,6 @@ export default function DhikrCard({ dhikr }: { dhikr: Dhikr }) {
         overflow: "hidden",
       }}
     >
-      {/* شريط تقدم علوي */}
       <div
         style={{
           position: "absolute",
@@ -74,7 +71,6 @@ export default function DhikrCard({ dhikr }: { dhikr: Dhikr }) {
         }}
       />
 
-      {/* رأس البطاقة */}
       <div
         style={{
           display: "flex",
@@ -85,7 +81,6 @@ export default function DhikrCard({ dhikr }: { dhikr: Dhikr }) {
           flexWrap: "wrap",
         }}
       >
-        {/* المرجع */}
         <span
           style={{
             fontSize: "12px",
@@ -99,7 +94,6 @@ export default function DhikrCard({ dhikr }: { dhikr: Dhikr }) {
           {dhikr.reference}
         </span>
 
-        {/* أزرار */}
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             onClick={copyText}
@@ -155,7 +149,6 @@ export default function DhikrCard({ dhikr }: { dhikr: Dhikr }) {
         </div>
       </div>
 
-      {/* نص الذكر */}
       <p
         style={{
           fontSize: "20px",
@@ -171,7 +164,6 @@ export default function DhikrCard({ dhikr }: { dhikr: Dhikr }) {
         {dhikr.text}
       </p>
 
-      {/* الفضل */}
       {dhikr.virtue && (
         <div
           style={{
@@ -189,7 +181,6 @@ export default function DhikrCard({ dhikr }: { dhikr: Dhikr }) {
         </div>
       )}
 
-      {/* العدّاد */}
       <div
         style={{
           display: "flex",
@@ -199,7 +190,6 @@ export default function DhikrCard({ dhikr }: { dhikr: Dhikr }) {
           flexWrap: "wrap",
         }}
       >
-        {/* العدد الحالي */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span style={{ fontSize: "13px", color: "#737373", fontWeight: 600 }}>
             التكرار:
@@ -227,12 +217,11 @@ export default function DhikrCard({ dhikr }: { dhikr: Dhikr }) {
                 borderRadius: "20px",
               }}
             >
-              ✓ تم
+              تم
             </span>
           )}
         </div>
 
-        {/* زر العد */}
         <button
           onClick={incrementCount}
           disabled={isComplete}
@@ -252,21 +241,10 @@ export default function DhikrCard({ dhikr }: { dhikr: Dhikr }) {
               : "0 4px 12px rgba(139, 105, 20, 0.25)",
             transition: "all 0.2s",
             minWidth: "140px",
-          }}
-          onMouseEnter={(e) => {
-            if (!isComplete) {
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = "0 6px 18px rgba(139, 105, 20, 0.35)";
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isComplete) {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 12px rgba(139, 105, 20, 0.25)";
-            }
+            fontFamily: "var(--font-cairo)",
           }}
         >
-          {isComplete ? "✓ تم الذكر" : "سبّح"}
+          {isComplete ? "تم الذكر" : "سبّح"}
         </button>
       </div>
     </div>
