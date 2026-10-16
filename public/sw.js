@@ -1,5 +1,5 @@
 // Service Worker - Ibn Jannatak
-const CACHE_VERSION = "v10";
+const CACHE_VERSION = "v12";
 const CACHE_NAME = `ibn-jannatak-cache-${CACHE_VERSION}`;
 const QURAN_CACHE = `ibn-jannatak-quran-${CACHE_VERSION}`;
 const TOTAL_SURAHS = 114;
@@ -20,7 +20,6 @@ const PRECACHE_URLS = [
   "/web-app-manifest-512x512.png",
 ];
 
-// ============ تثبيت ============
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -34,7 +33,6 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
-// ============ تفعيل ============
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((names) => {
@@ -48,6 +46,9 @@ self.addEventListener("activate", (event) => {
     })
   );
   self.clients.claim();
+  
+  // نبدأ تحميل السور تلقائياً
+  downloadAllSurahs();
 });
 
 // ============ تحميل كل السور ============
@@ -60,66 +61,72 @@ async function downloadAllSurahs() {
     try {
       const cached = await cache.match(url);
       if (cached) {
-        // نرسل تحديث
-        const clients = await self.clients.matchAll();
-        clients.forEach((client) => {
-          client.postMessage({
-            type: "QURAN_PROGRESS",
-            current: i,
-            total: TOTAL_SURAHS,
-          });
-        });
+        sendProgress(i);
         continue;
       }
 
-      const response = await fetch(url);
-      if (response.ok) {
-        await cache.put(url, response);
+      // نحاول 3 مرات
+      let success = false;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const response = await fetch(url);
+          if (response.ok) {
+            await cache.put(url, response);
+            success = true;
+            break;
+          }
+        } catch (err) {
+          console.warn(`سورة ${i} - محاولة ${attempt} فشلت`);
+          // ننتظر قبل المحاولة الثانية
+          await new Promise((r) => setTimeout(r, 500 * attempt));
+        }
       }
 
-      // نرسل تحديث
-      const clients = await self.clients.matchAll();
-      clients.forEach((client) => {
-        client.postMessage({
-          type: "QURAN_PROGRESS",
-          current: i,
-          total: TOTAL_SURAHS,
-        });
-      });
+      if (!success) {
+        console.warn(`سورة ${i} - فشلت كل المحاولات`);
+      }
+
+      sendProgress(i);
     } catch (error) {
       console.warn(`فشل تحميل سورة ${i}:`, error);
     }
     
-    // ننتظر 100ms
-    await new Promise((r) => setTimeout(r, 100));
+    // ننتظر 50ms (أسرع)
+    await new Promise((r) => setTimeout(r, 50));
   }
   
-  // نرسل إن التحميل اكتمل
   const clients = await self.clients.matchAll();
   clients.forEach((client) => {
     client.postMessage({ type: "QURAN_COMPLETE" });
   });
 }
 
-// ============ استقبال رسائل ============
+async function sendProgress(current) {
+  const clients = await self.clients.matchAll();
+  clients.forEach((client) => {
+    client.postMessage({
+      type: "QURAN_PROGRESS",
+      current,
+      total: TOTAL_SURAHS,
+    });
+  });
+}
+
 self.addEventListener("message", (event) => {
   if (event.data?.type === "DOWNLOAD_ALL_QURAN") {
     downloadAllSurahs();
   }
-
   if (event.data?.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
 });
 
-// ============ اعتراض الطلبات ============
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
   if (request.method !== "GET") return;
 
-  // 1. ملفات القرآن: Cache First
   if (url.pathname.startsWith("/quran-data/")) {
     event.respondWith(
       caches.open(QURAN_CACHE).then((cache) => {
@@ -144,10 +151,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 2. طلبات خارجية: تجاهل
   if (url.origin !== self.location.origin) return;
 
-  // 3. الصور
   if (request.destination === "image") {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) => {
@@ -165,7 +170,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 4. الصفحات
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
@@ -184,7 +188,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 5. باقي الملفات
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;

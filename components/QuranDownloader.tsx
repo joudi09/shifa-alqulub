@@ -7,21 +7,26 @@ const TOTAL_SURAHS = 114;
 export default function QuranDownloader() {
   const [downloading, setDownloading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [current, setCurrent] = useState(0);
   const [completed, setCompleted] = useState(false);
   const [show, setShow] = useState(false);
+  const [stuck, setStuck] = useState(false);
 
   useEffect(() => {
-    // نستمع للرسائل من Service Worker
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === "QURAN_PROGRESS") {
-        const { current, total } = event.data;
-        setProgress(Math.round((current / total) * 100));
+        const { current: c, total } = event.data;
+        setCurrent(c);
+        setProgress(Math.round((c / total) * 100));
+        setDownloading(true);
         setShow(true);
+        setStuck(false);
       }
 
       if (event.data?.type === "QURAN_COMPLETE") {
         setCompleted(true);
         setProgress(100);
+        setDownloading(false);
         setTimeout(() => setShow(false), 3000);
       }
     };
@@ -30,24 +35,45 @@ export default function QuranDownloader() {
       navigator.serviceWorker.addEventListener("message", handleMessage);
     }
 
-    // نبدأ التحميل تلقائياً بعد 3 ثواني
     const startTimer = setTimeout(() => {
       if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-        setDownloading(true);
-        setShow(true);
         navigator.serviceWorker.controller.postMessage({
           type: "DOWNLOAD_ALL_QURAN",
         });
+        setShow(true);
+        setDownloading(true);
       }
-    }, 3000);
+    }, 2000);
+
+    // نتحقق إذا واقف
+    const stuckTimer = setInterval(() => {
+      setCurrent((prevCurrent) => {
+        // إذا ما تغير العدد لمدة 30 ثانية
+        if (prevCurrent > 0 && prevCurrent < TOTAL_SURAHS) {
+          setStuck(true);
+        }
+        return prevCurrent;
+      });
+    }, 30000);
 
     return () => {
       clearTimeout(startTimer);
+      clearInterval(stuckTimer);
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.removeEventListener("message", handleMessage);
       }
     };
   }, []);
+
+  const retry = () => {
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: "DOWNLOAD_ALL_QURAN",
+      });
+      setStuck(false);
+      setDownloading(true);
+    }
+  };
 
   if (!show && !downloading) return null;
 
@@ -63,12 +89,12 @@ export default function QuranDownloader() {
         margin: "0 auto",
         backgroundColor: "white",
         borderRadius: "16px",
-        border: "2px solid #c9a227",
+        border: completed ? "2px solid #16a34a" : "2px solid #c9a227",
         padding: "14px",
         boxShadow: "0 12px 32px rgba(139, 105, 20, 0.35)",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: completed ? 0 : "10px" }}>
         <div
           style={{
             width: "36px",
@@ -106,33 +132,61 @@ export default function QuranDownloader() {
               fontFamily: "var(--font-amiri)",
             }}
           >
-            {completed ? "القرآن جاهز بدون إنترنت" : "جاري تحميل القرآن..."}
+            {completed
+              ? "القرآن جاهز بدون إنترنت"
+              : stuck
+              ? "التوقف — اضغط إعادة"
+              : "جاري تحميل القرآن..."}
           </p>
           <p style={{ fontSize: "11px", color: "#737373", margin: 0 }}>
-            {completed ? "كل السور متاحة offline" : `${progress}%`}
+            {completed
+              ? "كل السور متاحة offline"
+              : `السورة ${current} من ${TOTAL_SURAHS} (${progress}%)`}
           </p>
         </div>
       </div>
 
       {!completed && (
-        <div
-          style={{
-            height: "6px",
-            backgroundColor: "rgba(201, 162, 39, 0.15)",
-            borderRadius: "3px",
-            overflow: "hidden",
-          }}
-        >
+        <>
           <div
             style={{
-              height: "100%",
-              width: `${progress}%`,
-              background: "linear-gradient(90deg, #daa520, #8b6914)",
+              height: "6px",
+              backgroundColor: "rgba(201, 162, 39, 0.15)",
               borderRadius: "3px",
-              transition: "width 0.3s",
+              overflow: "hidden",
             }}
-          />
-        </div>
+          >
+            <div
+              style={{
+                height: "100%",
+                width: `${progress}%`,
+                background: "linear-gradient(90deg, #daa520, #8b6914)",
+                borderRadius: "3px",
+                transition: "width 0.3s",
+              }}
+            />
+          </div>
+
+          {stuck && (
+            <button
+              onClick={retry}
+              style={{
+                marginTop: "10px",
+                width: "100%",
+                padding: "8px",
+                borderRadius: "8px",
+                border: "none",
+                background: "linear-gradient(135deg, #daa520 0%, #8b6914 100%)",
+                color: "white",
+                fontSize: "12px",
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              إعادة المحاولة
+            </button>
+          )}
+        </>
       )}
     </div>
   );
