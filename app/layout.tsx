@@ -7,8 +7,9 @@ import Footer from "@/components/Footer";
 import FatihaModal from "@/components/FatihaModal";
 import FridayReminder from "@/components/FridayReminder";
 import NotificationManager from "@/components/NotificationManager";
-import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import InstallButton from "@/components/InstallButton";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import QuranDownloader from "@/components/QuranDownloader";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -71,6 +72,7 @@ export default function RootLayout({
         <FatihaModal />
         <NotificationManager />
         <InstallButton />
+        <QuranDownloader />
         <ServiceWorkerRegister />
         <main className="min-h-screen">{children}</main>
         <Footer />

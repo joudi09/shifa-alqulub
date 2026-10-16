@@ -1,7 +1,8 @@
-// Service Worker - اِبْنُ جَنَّتِك
-const CACHE_VERSION = "v5";
-const CACHE_NAME = `shifa-cache-${CACHE_VERSION}`;
-const QURAN_CACHE = `shifa-quran-${CACHE_VERSION}`;
+// Service Worker - Ibn Jannatak
+const CACHE_VERSION = "v10";
+const CACHE_NAME = `ibn-jannatak-cache-${CACHE_VERSION}`;
+const QURAN_CACHE = `ibn-jannatak-quran-${CACHE_VERSION}`;
+const TOTAL_SURAHS = 114;
 
 const PRECACHE_URLS = [
   "/",
@@ -36,17 +37,79 @@ self.addEventListener("install", (event) => {
 // ============ تفعيل ============
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((names) => {
       return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && cacheName !== QURAN_CACHE) {
-            return caches.delete(cacheName);
+        names.map((name) => {
+          if (name !== CACHE_NAME && name !== QURAN_CACHE) {
+            return caches.delete(name);
           }
         })
       );
     })
   );
   self.clients.claim();
+});
+
+// ============ تحميل كل السور ============
+async function downloadAllSurahs() {
+  const cache = await caches.open(QURAN_CACHE);
+  
+  for (let i = 1; i <= TOTAL_SURAHS; i++) {
+    const url = `/quran-data/${i}.json`;
+    
+    try {
+      const cached = await cache.match(url);
+      if (cached) {
+        // نرسل تحديث
+        const clients = await self.clients.matchAll();
+        clients.forEach((client) => {
+          client.postMessage({
+            type: "QURAN_PROGRESS",
+            current: i,
+            total: TOTAL_SURAHS,
+          });
+        });
+        continue;
+      }
+
+      const response = await fetch(url);
+      if (response.ok) {
+        await cache.put(url, response);
+      }
+
+      // نرسل تحديث
+      const clients = await self.clients.matchAll();
+      clients.forEach((client) => {
+        client.postMessage({
+          type: "QURAN_PROGRESS",
+          current: i,
+          total: TOTAL_SURAHS,
+        });
+      });
+    } catch (error) {
+      console.warn(`فشل تحميل سورة ${i}:`, error);
+    }
+    
+    // ننتظر 100ms
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  
+  // نرسل إن التحميل اكتمل
+  const clients = await self.clients.matchAll();
+  clients.forEach((client) => {
+    client.postMessage({ type: "QURAN_COMPLETE" });
+  });
+}
+
+// ============ استقبال رسائل ============
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "DOWNLOAD_ALL_QURAN") {
+    downloadAllSurahs();
+  }
+
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 // ============ اعتراض الطلبات ============
@@ -56,13 +119,12 @@ self.addEventListener("fetch", (event) => {
 
   if (request.method !== "GET") return;
 
-  // 1. ملفات القرآن المحلية: Cache First
+  // 1. ملفات القرآن: Cache First
   if (url.pathname.startsWith("/quran-data/")) {
     event.respondWith(
       caches.open(QURAN_CACHE).then((cache) => {
         return cache.match(request).then((cached) => {
           if (cached) return cached;
-          
           return fetch(request)
             .then((response) => {
               if (response.ok) {
@@ -103,7 +165,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 4. الصفحات (Navigation)
+  // 4. الصفحات
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
@@ -122,7 +184,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 5. باقي الملفات: Cache First
+  // 5. باقي الملفات
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;
@@ -136,11 +198,4 @@ self.addEventListener("fetch", (event) => {
       });
     })
   );
-});
-
-// ============ استقبال رسائل ============
-self.addEventListener("message", (event) => {
-  if (event.data?.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
 });
